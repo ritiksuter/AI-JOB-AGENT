@@ -1,0 +1,59 @@
+frontend/
+│
+├── public/
+│
+├── src/
+│
+├── components/
+│   │
+│   ├── common/
+│   │   ├── Button.jsx
+│   │   ├── Input.jsx
+│   │   ├── Card.jsx
+│   │   ├── Loader.jsx
+│   │   ├── EmptyState.jsx
+│   │   └── Badge.jsx
+│   │
+│   ├── layout/
+│   │   ├── Navbar.jsx
+│   │   ├── Sidebar.jsx
+│   │   └── ProtectedRoute.jsx
+│   │
+│   ├── jobs/
+│   │   ├── JobCard.jsx
+│   │   ├── JobList.jsx
+│   │   └── SearchBar.jsx
+│   │
+│   ├── profile/
+│   │   └── ProfileForm.jsx
+│   │
+│   └── resume/
+│       └── ResumeUploader.jsx
+│
+├── pages/
+│   ├── Login.jsx
+│   ├── Register.jsx
+│   ├── Dashboard.jsx
+│   ├── Jobs.jsx
+│   ├── Applications.jsx
+│   ├── Resume.jsx
+│   ├── Profile.jsx
+│   └── NotFound.jsx
+│
+├── redux/
+│   ├── store.js
+│   ├── authSlice.js
+│   ├── userSlice.js
+│   ├── jobSlice.js
+│   └── applicationSlice.js
+│
+├── services/
+│   ├── axios.js
+│   ├── auth.service.js
+│   ├── user.service.js
+│   ├── resume.service.js
+│   └── job.service.js
+│
+├── App.jsx
+├── main.jsx
+└── index.css

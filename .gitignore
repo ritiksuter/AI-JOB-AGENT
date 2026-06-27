@@ -1,0 +1,139 @@
+# ==========================
+# Dependencies
+# ==========================
+node_modules/
+**/node_modules/
+
+# ==========================
+# Environment Variables
+# ==========================
+.env
+.env.*
+!.env.example
+
+# ==========================
+# Google Cloud Credentials
+# ==========================
+service-account.json
+**/service-account.json
+credentials.json
+**/credentials.json
+
+# ==========================
+# Build Output
+# ==========================
+dist/
+build/
+coverage/
+.vite/
+
+**/dist/
+**/build/
+**/coverage/
+**/.vite/
+
+# ==========================
+# Logs
+# ==========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==========================
+# Runtime Files
+# ==========================
+*.pid
+*.seed
+*.pid.lock
+
+# ==========================
+# Uploads (Optional)
+# Uncomment if uploads are stored locally
+# ==========================
+# uploads/
+# backend/uploads/
+
+# ==========================
+# Cache
+# ==========================
+.cache/
+.parcel-cache/
+.eslintcache
+
+# ==========================
+# Operating System Files
+# ==========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ==========================
+# IDE & Editors
+# ==========================
+.vscode/
+.idea/
+
+*.swp
+*.swo
+*.tmp
+
+# ==========================
+# Package Managers
+# ==========================
+.pnpm-store/
+.npm/
+.yarn/
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# ==========================
+# Test & Coverage
+# ==========================
+.nyc_output/
+coverage/
+
+# ==========================
+# Miscellaneous
+# ==========================
+*.bak
+*.orig
+*.rej
+
+# ==========================
+# Mac/Linux Temporary Files
+# ==========================
+.Trashes
+.fseventsd
+
+# ==========================
+# Vercel / Netlify
+# ==========================
+.vercel/
+.netlify/
+
+# ==========================
+# Docker
+# ==========================
+docker-compose.override.yml
+
+# ==========================
+# Terraform
+# ==========================
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
+# ==========================
+# Optional Lock Files
+# Keep these commented unless you intentionally
+# don't want to commit them.
+# ==========================
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
