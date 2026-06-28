@@ -2,14 +2,14 @@ import api from "./axios";
 
 // Trigger Find Jobs Now
 export const searchJobs = async () => {
-  const response = await api.post("/webhook/search");
+  const response = await api.post("/jobs/search");
 
   return response.data;
 };
 
 // Get Jobs
 export const getJobs = async () => {
-  const response = await api.get("/webhook/jobs");
+  const response = await api.get("/jobs");
 
   return response.data;
 };
@@ -17,7 +17,7 @@ export const getJobs = async () => {
 // Save Application
 export const saveApplication = async (applicationData) => {
   const response = await api.post(
-    "/webhook/application",
+    "/applications/application",
     applicationData
   );
 
@@ -26,7 +26,7 @@ export const saveApplication = async (applicationData) => {
 
 // Get Application History
 export const getApplications = async () => {
-  const response = await api.get("/webhook/application");
+  const response = await api.get("/applications/application");
 
   return response.data;
 };
@@ -34,7 +34,7 @@ export const getApplications = async () => {
 // ✅ Get Single Application
 export const getApplicationById = async (id) => {
   const response = await api.get(
-    `/webhook/application/${id}`
+    `/applications/application/${id}`
   );
 
   return response.data;

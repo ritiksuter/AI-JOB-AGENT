@@ -1,0 +1,1026 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 2,
+              "triggerAtMinute": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1296,
+        1344
+      ],
+      "id": "211e5619-d32f-4eb1-8b18-4c369bb61381",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.body.resumeUrl }}",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1600,
+        800
+      ],
+      "id": "f359d4d5-720c-450d-ac46-4f405a14c83a",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "dd7Wf4gh1D3oMRHZ",
+          "name": "Google Drive OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1232,
+        -368
+      ],
+      "id": "8d11d81d-f1a0-42b3-9b84-a4905fbaeca1",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1t3_UzmD-i5Z1By3_VR_kLcUT9auvMnQR4riUfVwAhH4",
+          "mode": "list",
+          "cachedResultName": "n8n job search",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t3_UzmD-i5Z1By3_VR_kLcUT9auvMnQR4riUfVwAhH4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Filter",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t3_UzmD-i5Z1By3_VR_kLcUT9auvMnQR4riUfVwAhH4/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1072,
+        -368
+      ],
+      "id": "88bc2346-db27-438b-b973-1243d0a00f49",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8FaY8Qz3Ej6Qj7h6",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  let url = \"https://www.linkedin.com/jobs/search/?f_TPR=r86400\";\n\n  const keyword = item.json.Keyword;\n  const location = item.json.Location;\n  const experienceLevel = item.json[\"Entry Level\"];\n  const remote = item.json.Hybrid;\n  const jobType = item.json[\"Job Type\"]; // adjust if your column name differs\n  const easyApply = item.json.T;\n\n  if (keyword) {\n    url += `&keywords=${encodeURIComponent(keyword)}`;\n  }\n\n  if (location) {\n    url += `&location=${encodeURIComponent(location)}`;\n  }\n\n  if (experienceLevel) {\n    const transformedExperience = experienceLevel\n      .split(\",\")\n      .map((exp) => {\n        switch (exp.trim()) {\n          case \"Internship\": return \"1\";\n          case \"Entry level\": return \"2\";\n          case \"Associate\": return \"3\";\n          case \"Mid-Senior level\": return \"4\";\n          case \"Director\": return \"5\";\n          case \"Executive\": return \"6\";\n          default: return \"\";\n        }\n      })\n      .filter(Boolean);\n\n    if (transformedExperience.length) {\n      url += `&f_E=${transformedExperience.join(\",\")}`;\n    }\n  }\n\n  if (remote) {\n    const transformedRemote = remote\n      .split(\",\")\n      .map((e) => {\n        switch (e.trim()) {\n          case \"Onsite\": return \"1\";\n          case \"Remote\": return \"2\";\n          case \"Hybrid\": return \"3\";\n          default: return \"\";\n        }\n      })\n      .filter(Boolean);\n\n    if (transformedRemote.length) {\n      url += `&f_WT=${transformedRemote.join(\",\")}`;\n    }\n  }\n\n  if (jobType) {\n    const transformedJobType = jobType\n      .split(\",\")\n      .map((type) => type.trim().charAt(0).toUpperCase());\n\n    url += `&f_JT=${transformedJobType.join(\",\")}`;\n  }\n\n  if (easyApply) {\n    url += \"&f_EA=true\";\n  }\n\n  return {\n    json: {\n      url,\n    },\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -912,
+        -368
+      ],
+      "id": "bf2e5a70-f03b-42fa-a5b8-3514f0178291",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -720,
+        -368
+      ],
+      "id": "624e882c-d43f-4d82-a941-868268ccc9c2",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "links",
+              "cssSelector": "ul.jobs-search__results-list li div a[class*=\"base-card\"]",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        -368
+      ],
+      "id": "ff31ede2-0429-44b5-b2e3-d2916bf6054d",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.links }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -176,
+        -368
+      ],
+      "id": "ea101ca5-8371-4c6f-acb9-941f69e1fe4a",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "title",
+              "cssSelector": "div h1"
+            },
+            {
+              "key": "company",
+              "cssSelector": "div span a"
+            },
+            {
+              "key": "location",
+              "cssSelector": "div span[class*='topcard__flavor topcard__flavor--bullet']"
+            },
+            {
+              "key": "description",
+              "cssSelector": "div.description__text.description__text--rich"
+            },
+            {
+              "key": "jobid",
+              "cssSelector": "a[data-item-type='semaphore']",
+              "returnValue": "attribute",
+              "attribute": "data-semaphore-content-urn"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        -368
+      ],
+      "id": "dc44ac0f-0a84-47c4-8c57-a3cda09ec1dc",
+      "name": "HTML1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bdcad483-555e-42a8-9093-64e7729d8568",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "b71a529d-15b2-47f6-b108-ed350f8b043f",
+              "name": "company",
+              "value": "={{ $json.company }}",
+              "type": "string"
+            },
+            {
+              "id": "1c1cd289-6445-41ca-a0e1-a0f2fc612c7d",
+              "name": "description",
+              "value": "={{ $json.description.replaceAll(/\\s+/g, \" \") }}",
+              "type": "string"
+            },
+            {
+              "id": "100324b5-5ef5-4d3a-8c5e-f1da6d951dda",
+              "name": "jobId",
+              "value": "={{ $json.jobid.split(\":\").last() }}",
+              "type": "string"
+            },
+            {
+              "id": "2d8c246b-9af5-4e5c-875c-53c84b436124",
+              "name": "applyLink",
+              "value": "={{ \"https://www.linkedin.com/jobs/view/\" + $json.jobid.split(\":\").last() }}",
+              "type": "string"
+            },
+            {
+              "id": "8a260f89-5ed8-440c-bc48-5db947536c4f",
+              "name": "fetchedAt",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        -368
+      ],
+      "id": "a4c3c264-4702-4eac-b873-64a32c17a235",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an assistant that helps match candidates to job opportunities. Your task is to review my resume, then analyze both the resume and job description to calculate a job matching score. Additionally, create a cover letter based on my resume and the job description. The cover letter should contain at least 2 paragraphs and should exclude the name, address, and signature sections from the beginning and end.\n\nWhen using special characters like quotation marks (\"), ensure they are properly escaped with a backslash. The output must be formatted as valid JSON that can be parsed without errors.\n\nFor example your response should be like: {\"score\": 80, \"coverLetter\": \"sample cover letter\" }\n\njob_description: {{ $json.description }}\nmy_resume: {{ $('Extract from File').item.json.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1312,
+        -144
+      ],
+      "id": "23186f37-3f1d-4b09-963b-556999daadd3",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -1312,
+        16
+      ],
+      "id": "022b82c0-b3cc-4db0-b170-1b96702321cd",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NgctiOxBH521yl6h",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "= {{ $json.output.replaceAll(/```(?:json)?/g, \"\") }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1040,
+        -144
+      ],
+      "id": "2d8b49b6-6cd3-436b-803e-e0d7993b5b7c",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1t3_UzmD-i5Z1By3_VR_kLcUT9auvMnQR4riUfVwAhH4",
+          "mode": "list",
+          "cachedResultName": "n8n job search",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t3_UzmD-i5Z1By3_VR_kLcUT9auvMnQR4riUfVwAhH4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 569412048,
+          "mode": "list",
+          "cachedResultName": "Result",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t3_UzmD-i5Z1By3_VR_kLcUT9auvMnQR4riUfVwAhH4/edit#gid=569412048"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "link": "={{ $('Edit Fields').item.json.applyLink }}",
+            "Title": "={{ $('Edit Fields').item.json.title }}",
+            "Company": "={{ $('Edit Fields').item.json.company }}",
+            "Location": "={{ $('Edit Fields').item.json.location }}",
+            "score": "={{ $json.score }}",
+            "description": "={{ $('Edit Fields').item.json.description }}",
+            "Cover Letter": "={{ $json.coverLetter }}",
+            "fetchedAt": "={{ $('Edit Fields').item.json.fetchedAt }}"
+          },
+          "matchingColumns": [
+            "link"
+          ],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "link",
+              "displayName": "link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fetchedAt",
+              "displayName": "fetchedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Cover Letter",
+              "displayName": "Cover Letter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1600,
+        640
+      ],
+      "id": "f26f2c3d-3d1f-4c7a-8d83-6107b3377366",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8FaY8Qz3Ej6Qj7h6",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8aeafe0d-5eb0-4ff6-89da-5bd8df0b8aff",
+              "leftValue": "={{ $json.score }}",
+              "rightValue": 50,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -864,
+        64
+      ],
+      "id": "4922c3e1-1203-421a-a6ff-79d41a682a8d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "5558894581",
+        "text": "=Title: {{ $json.Title }}\nCompany: {{ $json.Company }}\nLocation: {{ $json.Location }}\nJob Score: {{ $json.score }}\nApply: {{ $json.link }}\nCopy Cover Letter From here: {{ $json['Cover Letter'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -224,
+        -224
+      ],
+      "id": "5d965f8c-f519-4b9f-8850-ae1137636496",
+      "name": "Send a text message",
+      "webhookId": "76add581-2c1a-4c78-b534-43c1f2579dca",
+      "credentials": {
+        "telegramApi": {
+          "id": "zcuhGWPkK7gEsIV6",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "c819e752-6574-46f9-94fe-20aaa287c7e9",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1632,
+        -368
+      ],
+      "id": "b143648e-5098-4ebb-9b23-7dd72dd43a38",
+      "name": "Webhook",
+      "webhookId": "c819e752-6574-46f9-94fe-20aaa287c7e9"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1t3_UzmD-i5Z1By3_VR_kLcUT9auvMnQR4riUfVwAhH4",
+          "mode": "list",
+          "cachedResultName": "n8n job search",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t3_UzmD-i5Z1By3_VR_kLcUT9auvMnQR4riUfVwAhH4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 569412048,
+          "mode": "list",
+          "cachedResultName": "Result",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t3_UzmD-i5Z1By3_VR_kLcUT9auvMnQR4riUfVwAhH4/edit#gid=569412048"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1088,
+        1344
+      ],
+      "id": "364167ee-b1fd-4ab8-8992-f82e4c147725",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8FaY8Qz3Ej6Qj7h6",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -704,
+        1344
+      ],
+      "id": "8f88ebc5-b9c5-4c2b-bc1c-f38825694eba",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fcd79d6d-527c-4a82-b038-18eb1c074407",
+              "leftValue": "={{\n(Date.now() - new Date($json.fetchedAt).getTime()) / (1000 * 60 * 60 * 24)\n}}",
+              "rightValue": 15,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -560,
+        1504
+      ],
+      "id": "a41b8373-493d-473d-9a00-6d89c60f142e",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1t3_UzmD-i5Z1By3_VR_kLcUT9auvMnQR4riUfVwAhH4",
+          "mode": "list",
+          "cachedResultName": "n8n job search",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t3_UzmD-i5Z1By3_VR_kLcUT9auvMnQR4riUfVwAhH4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 569412048,
+          "mode": "list",
+          "cachedResultName": "Result",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1t3_UzmD-i5Z1By3_VR_kLcUT9auvMnQR4riUfVwAhH4/edit#gid=569412048"
+        },
+        "startIndex": "={{ $json.row_number }}"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -304,
+        1680
+      ],
+      "id": "5d9b3793-ac4c-4af1-b718-c1b6bf35464b",
+      "name": "Delete rows or columns from sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "8FaY8Qz3Ej6Qj7h6",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "row_number",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        -912,
+        1344
+      ],
+      "id": "2aa82f70-6aa5-4846-abf6-a047788ee526",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.body.resumeUrl }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1424,
+        -368
+      ],
+      "id": "522acf85-35a8-4c30-b65b-f58df4ffb13f",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "jobs",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        -592,
+        48
+      ],
+      "id": "fc5f5d0f-1b42-470f-96f6-9f650adf4733",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -256,
+        48
+      ],
+      "id": "c5a75acb-3084-49fa-a5b1-730bb74a1565",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "links",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -368
+      ],
+      "id": "634dbe6a-4a37-4931-8d0c-77f326aec2fe",
+      "name": "Split Out"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "ritiksuteri.app.n8n.cloud",
+            "user-agent": "axios/1.18.1",
+            "content-length": "324",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "47.15.116.5",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "IN",
+            "cf-ray": "a11a6cf999fae193-MRS",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "47.15.116.5, 172.68.234.130",
+            "x-forwarded-host": "ritiksuteri.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-swc-32-597bdcddb5-tvxrj",
+            "x-is-trusted": "yes",
+            "x-real-ip": "47.15.116.5"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "userId": "6a3e1c0ceb517b1ebb3636c6",
+            "name": "Rohan Suteri",
+            "email": "ritiksuteri2737@gmail.com",
+            "resumeUrl": "https://res.cloudinary.com/dxbcvga0h/raw/upload/v1782455975/job-agent/resumes/afnxw4mjskf7xf3nqaux",
+            "jobRole": "MERN Developer",
+            "location": "Gurugram",
+            "experience": "1-3",
+            "remoteOnly": false,
+            "cronExpression": "0 9 * * *"
+          },
+          "webhookUrl": "https://ritiksuteri.app.n8n.cloud/webhook/c819e752-6574-46f9-94fe-20aaa287c7e9",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        []
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "HTML1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Delete rows or columns from sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete rows or columns from sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c8129855-daa8-493d-977f-b4e0c4857c39",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5dd115e524b580a06bd093ce76c354be4b93553a186e8c62b1b7638bc26a108b"
+  },
+  "nodeGroups": [],
+  "id": "N2hjOdm9J0jjC3hr",
+  "tags": []
+}

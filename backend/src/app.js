@@ -7,7 +7,8 @@ dotenv.config();
 import authRoutes from "./routes/auth.routes.js";
 import resumeRoutes from "./routes/resume.routes.js";
 import userRoutes from "./routes/user.routes.js";
-import webhookRoutes from "./routes/webhook.routes.js";
+import applicationRoutes from "./routes/application.routes.js";
+import jobRoutes from "./routes/job.routes.js";
 
 const app = express();
 
@@ -34,7 +35,8 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/resume", resumeRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/webhook", webhookRoutes);
+app.use("/api/applications", applicationRoutes);
+app.use("/api/jobs", jobRoutes);
 
 // 404 Handler
 app.use((req, res) => {
