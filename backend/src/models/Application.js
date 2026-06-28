@@ -30,6 +30,22 @@ const applicationSchema = new mongoose.Schema(
       default: "",
     },
 
+    // NEW
+    score: {
+      type: String,
+      default: "",
+    },
+
+    description: {
+      type: String,
+      default: "",
+    },
+
+    coverLetter: {
+      type: String,
+      default: "",
+    },
+
     status: {
       type: String,
       enum: ["Applied", "Pending", "Rejected", "Interview"],
@@ -44,8 +60,8 @@ const applicationSchema = new mongoose.Schema(
     expiresAt: {
       type: Date,
       required: true,
-      expires: 0
-    }
+      expires: 0,
+    },
   },
   {
     timestamps: true,

@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useSelector } from "react-redux";
-
+import ApplicationDetails from "./pages/ApplicationDetails";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
 
 import Login from "./pages/Login";
@@ -45,6 +45,7 @@ const App = () => {
         <Route path="/jobs" element={<Jobs />} />
 
         <Route path="/applications" element={<Applications />} />
+        <Route path="/applications/:id" element={<ApplicationDetails />} />
       </Route>
 
       {/* 404 */}

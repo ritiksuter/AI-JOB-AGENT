@@ -88,6 +88,9 @@ export const saveApplication = async (req, res) => {
       location,
       jobUrl,
       status,
+      score,
+      description,
+      coverLetter,
     } = req.body;
 
     const existingApplication = await Application.findOne({
@@ -118,6 +121,11 @@ export const saveApplication = async (req, res) => {
         location,
         jobUrl,
         status,
+
+        score,
+        description,
+        coverLetter,
+
         expiresAt: expiryDate,
       });
 
@@ -165,6 +173,45 @@ export const getApplications = async (
     return res.status(500).json({
       success: false,
       message: "Failed to fetch applications",
+    });
+  }
+};
+
+
+// Get Single Application
+export const getApplicationById = async (
+  req,
+  res
+) => {
+  try {
+    const { id } = req.params;
+
+    const application =
+      await Application.findOne({
+        _id: id,
+        user: req.user.userId,
+      });
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Application not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      application,
+    });
+  } catch (error) {
+    console.error(
+      "Get Application Error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch application",
     });
   }
 };

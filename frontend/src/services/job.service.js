@@ -30,3 +30,12 @@ export const getApplications = async () => {
 
   return response.data;
 };
+
+// ✅ Get Single Application
+export const getApplicationById = async (id) => {
+  const response = await api.get(
+    `/webhook/application/${id}`
+  );
+
+  return response.data;
+};

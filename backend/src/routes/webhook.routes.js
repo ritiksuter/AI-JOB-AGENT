@@ -7,6 +7,7 @@ import {
   getJobs,
   saveApplication,
   getApplications,
+  getApplicationById,
 } from "../controllers/webhook.controller.js";
 
 const router = express.Router();
@@ -37,6 +38,12 @@ router.get(
   "/application",
   authMiddleware,
   getApplications
+);
+
+router.get(
+  "/application/:id",
+  authMiddleware,
+  getApplicationById
 );
 
 export default router;

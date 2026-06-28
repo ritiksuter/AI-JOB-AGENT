@@ -18,7 +18,7 @@ export const getJobsFromSheet = async () => {
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: "Result!A:G",
+      range: "Result!A:H", // <-- Changed
     });
 
     const rows = response.data.values || [];
@@ -32,9 +32,10 @@ export const getJobsFromSheet = async () => {
       company: row[1] || "",
       location: row[2] || "",
       link: row[3] || "",
-      score: row[4] || "",
-      description: row[5] || "",
-      coverLetter: row[6] || "",
+      fetchedAt: row[4] || "",
+      score: row[5] || "",
+      description: row[6] || "",
+      coverLetter: row[7] || "",
     }));
   } catch (error) {
     console.error("Google Sheets Error:");

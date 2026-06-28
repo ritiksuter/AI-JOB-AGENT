@@ -66,7 +66,7 @@ const Sidebar = () => {
 
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r border-gray-200 bg-white">
+    <aside className="sticky flex h-screen w-64 flex-col border-r border-gray-200 bg-white">
       {/* Logo */}
       <div className="border-b border-gray-200 p-6">
         <h1 className="text-2xl font-bold text-blue-600">

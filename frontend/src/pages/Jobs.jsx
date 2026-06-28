@@ -106,6 +106,10 @@ const Jobs = () => {
         location: job.location,
         jobUrl: job.link,
         status: "Applied",
+
+        score: job.score,
+        description: job.description,
+        coverLetter: job.coverLetter,
       });
 
       dispatch(

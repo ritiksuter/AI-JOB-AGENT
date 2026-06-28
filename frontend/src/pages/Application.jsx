@@ -20,9 +20,11 @@ import {
   getApplicationsSuccess,
   getApplicationsFailure,
 } from "../redux/applicationSlice";
+import { useNavigate } from "react-router-dom";
 
 const Applications = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     applications,
@@ -105,14 +107,16 @@ const Applications = () => {
                     {application.status}
                   </Badge>
 
-                  <a
-                    href={application.jobUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
+                 <button
+                    onClick={() =>
+                      navigate(
+                        `/applications/${application._id}`
+                      )
+                    }
+                    className="text-blue-600 hover:underline font-medium"
                   >
-                    View Job
-                  </a>
+                    View Details
+                  </button>
                 </div>
               </div>
             </Card>
