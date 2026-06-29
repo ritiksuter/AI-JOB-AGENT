@@ -140,5 +140,6 @@ crash.log
 # yarn.lock
 # pnpm-lock.yaml
 
+./n8n
 
 ./n8n/n8n_data

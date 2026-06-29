@@ -25,7 +25,7 @@ export const uploadUserResume = async (req, res) => {
     if (!allowedTypes.includes(req.file.mimetype)) {
       return res.status(400).json({
         success: false,
-        message: "Only PDF, DOC, and DOCX files are allowed",
+        message: "Only PDF, DOC and DOCX files are allowed",
       });
     }
 
@@ -38,28 +38,30 @@ export const uploadUserResume = async (req, res) => {
       });
     }
 
-    // Delete old resume if available
-    if (
-      user.resumePublicId &&
-      user.resumePublicId.length > 0
-    ) {
+    // Delete previous resume if it exists
+    if (user.resumePublicId) {
       await deleteResume(user.resumePublicId);
     }
 
     // Upload new resume
     const uploadedFile = await uploadResume(req.file);
 
-    console.log(uploadResume);
-
     user.resumeUrl = uploadedFile.secure_url;
     user.resumePublicId = uploadedFile.public_id;
+    user.resumeOriginalName = req.file.originalname;
+    user.resumeUploadedAt = new Date();
 
     await user.save();
 
     return res.status(200).json({
       success: true,
       message: "Resume uploaded successfully",
-      resumeUrl: user.resumeUrl,
+      resume: {
+        url: user.resumeUrl,
+        publicId: user.resumePublicId,
+        originalName: user.resumeOriginalName,
+        uploadedAt: user.resumeUploadedAt,
+      },
     });
   } catch (error) {
     console.error("Resume Upload Error:", error);
@@ -74,16 +76,21 @@ export const uploadUserResume = async (req, res) => {
 // Get Resume
 export const getResume = async (req, res) => {
   try {
-    const user = await User.findById(
-      req.user.userId
-    ).select("resumeUrl");
+    const user = await User.findById(req.user.userId).select(
+      "resumeUrl resumePublicId resumeOriginalName resumeUploadedAt"
+    );
 
     return res.status(200).json({
       success: true,
-      resumeUrl: user?.resumeUrl || null,
+      resume: {
+        url: user?.resumeUrl || "",
+        publicId: user?.resumePublicId || "",
+        originalName: user?.resumeOriginalName || "",
+        uploadedAt: user?.resumeUploadedAt || null,
+      },
     });
   } catch (error) {
-    console.error(error);
+    console.error("Get Resume Error:", error);
 
     return res.status(500).json({
       success: false,
@@ -95,9 +102,7 @@ export const getResume = async (req, res) => {
 // Delete Resume
 export const removeResume = async (req, res) => {
   try {
-    const user = await User.findById(
-      req.user.userId
-    );
+    const user = await User.findById(req.user.userId);
 
     if (!user) {
       return res.status(404).json({
@@ -112,6 +117,8 @@ export const removeResume = async (req, res) => {
 
     user.resumeUrl = "";
     user.resumePublicId = "";
+    user.resumeOriginalName = "";
+    user.resumeUploadedAt = null;
 
     await user.save();
 
@@ -120,7 +127,7 @@ export const removeResume = async (req, res) => {
       message: "Resume deleted successfully",
     });
   } catch (error) {
-    console.error(error);
+    console.error("Delete Resume Error:", error);
 
     return res.status(500).json({
       success: false,

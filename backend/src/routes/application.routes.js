@@ -6,6 +6,7 @@ import {
   saveApplication,
   getApplications,
   getApplicationById,
+  updateApplicationStatus,
 } from "../controllers/application.controller.js";
 
 const router = express.Router();
@@ -24,10 +25,18 @@ router.get(
   getApplications
 );
 
+// Get Single Application
 router.get(
   "/application/:id",
   authMiddleware,
   getApplicationById
+);
+
+// Update Application Status
+router.patch(
+  "/application/:id/status",
+  authMiddleware,
+  updateApplicationStatus
 );
 
 export default router;

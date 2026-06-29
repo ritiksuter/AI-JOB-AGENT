@@ -25,10 +25,20 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    
+
     resumePublicId: {
       type: String,
       default: "",
+    },
+
+    resumeOriginalName: {
+      type: String,
+      default: "",
+    },
+
+    resumeUploadedAt: {
+      type: Date,
+      default: null,
     },
 
     cronExpression: {
@@ -62,7 +72,7 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const User = mongoose.model("User", userSchema);

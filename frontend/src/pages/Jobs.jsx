@@ -5,11 +5,7 @@ import DashboardLayout from "../components/layout/DashboardLayout";
 import SearchBar from "../components/jobs/SearchBar";
 import JobList from "../components/jobs/JobList";
 
-import {
-  getJobs,
-  searchJobs,
-  saveApplication,
-} from "../services/job.service";
+import { getJobs, searchJobs, saveApplication } from "../services/job.service";
 
 import {
   getJobsStart,
@@ -21,16 +17,12 @@ import {
   markJobApplied,
 } from "../redux/jobSlice";
 
-import {
-  saveApplicationSuccess,
-} from "../redux/applicationSlice";
+import { saveApplicationSuccess } from "../redux/applicationSlice";
 
 const Jobs = () => {
   const dispatch = useDispatch();
 
-  const { jobs, loading, searching } = useSelector(
-    (state) => state.jobs
-  );
+  const { jobs, loading, searching } = useSelector((state) => state.jobs);
 
   const [search, setSearch] = useState("");
   const [applyingJobId, setApplyingJobId] = useState(null);
@@ -46,9 +38,8 @@ const Jobs = () => {
     } catch (error) {
       dispatch(
         getJobsFailure(
-          error.response?.data?.message ||
-            "Unable to fetch jobs."
-        )
+          error.response?.data?.message || "Unable to fetch jobs.",
+        ),
       );
     }
   }, [dispatch]);
@@ -69,31 +60,28 @@ const Jobs = () => {
     } catch (error) {
       dispatch(
         searchJobsFailure(
-          error.response?.data?.message ||
-            "Unable to search jobs."
-        )
+          error.response?.data?.message || "Unable to search jobs.",
+        ),
       );
     }
   };
 
   const filteredJobs = useMemo(() => {
-    const keyword = search.toLowerCase();
+    const keyword = search.trim().toLowerCase();
 
-    return jobs.filter((job) => {
-      return (
-        job.company?.toLowerCase().includes(keyword) ||
-        job.role?.toLowerCase().includes(keyword) ||
-        job.location?.toLowerCase().includes(keyword)
-      );
-    });
+    if (!keyword) return jobs;
+
+    return jobs.filter((job) =>
+      Object.values(job).some((value) =>
+        String(value ?? "")
+          .toLowerCase()
+          .includes(keyword),
+      ),
+    );
   }, [jobs, search]);
 
   const handleApply = (job) => {
-    window.open(
-      job.link,
-      "_blank",
-      "noopener,noreferrer"
-    );
+    window.open(job.link, "_blank", "noopener,noreferrer");
   };
 
   const handleMarkAsApplied = async (job) => {
@@ -112,9 +100,7 @@ const Jobs = () => {
         coverLetter: job.coverLetter,
       });
 
-      dispatch(
-        saveApplicationSuccess(data.application)
-      );
+      dispatch(saveApplicationSuccess(data.application));
       dispatch(markJobApplied(job.link));
     } catch (error) {
       console.error(error);
@@ -130,9 +116,7 @@ const Jobs = () => {
           search={search}
           searching={searching}
           onSearch={handleSearchJobs}
-          onSearchChange={(event) =>
-            setSearch(event.target.value)
-          }
+          onSearchChange={(event) => setSearch(event.target.value)}
         />
 
         <JobList

@@ -19,6 +19,11 @@ import Loader from "../components/common/Loader";
 import EmptyState from "../components/common/EmptyState";
 
 import { getApplicationById } from "../services/job.service";
+import ApplicationStatusCard from "../components/application/ApplicationStatusCard";
+import SkillsAnalysisCard from "../components/application/SkillsAnalysisCard";
+import ResumeSuggestionsCard from "../components/application/ResumeSuggestionCard";
+import InterviewPreparationCard from "../components/application/InterviewPreparationCard";
+import JobInsightsCard from "../components/application/JobInsightsCard";
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
   year: "numeric",
@@ -49,37 +54,25 @@ const ApplicationDetails = () => {
     }
   };
 
-  useEffect(() => {
+  const fetchApplication = async () => {
     if (!id) return;
 
-    let ignore = false;
+    try {
+      setLoading(true);
 
-    const fetchApplication = async () => {
-      try {
-        setLoading(true);
+      const data = await getApplicationById(id);
 
-        const data = await getApplicationById(id);
+      setApplication(data.application);
+    } catch (error) {
+      console.error(error);
+      setApplication(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        if (!ignore) {
-          setApplication(data.application);
-        }
-      } catch (err) {
-        if (!ignore) {
-          setApplication(null);
-        }
-        console.error(err);
-      } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
-      }
-    };
-
+  useEffect(() => {
     fetchApplication();
-
-    return () => {
-      ignore = true;
-    };
   }, [id]);
 
   if (loading) {
@@ -220,17 +213,49 @@ const ApplicationDetails = () => {
         </Card>
 
         <Card>
-          <h2 className="mb-4 text-xl font-semibold">🚀 Planned AI Features</h2>
+          <h2 className="mb-4 text-xl font-semibold">Resume Used</h2>
 
-          <ul className="space-y-3 text-gray-700">
-            <li>✅ Resume Used for Application</li>
-            <li>✅ Skills Match Analysis</li>
-            <li>✅ AI Interview Preparation</li>
-            <li>✅ Resume Improvement Suggestions</li>
-            <li>✅ Personalized Job Recommendations</li>
-            <li>✅ Application Timeline & Reminders</li>
-          </ul>
+          {application.resume?.url ? (
+            <div className="space-y-4">
+              <div className="rounded-lg border bg-gray-50 p-4">
+                <p className="text-sm text-gray-500">Resume Name</p>
+
+                <p className="mt-1 font-medium text-gray-900">
+                  {application.resume.originalName || "Resume"}
+                </p>
+              </div>
+
+              <div className="rounded-lg border bg-gray-50 p-4">
+                <p className="text-sm text-gray-500">Uploaded On</p>
+
+                <p className="mt-1 font-medium text-gray-900">
+                  {application.resume.uploadedAt
+                    ? dateFormatter.format(
+                        new Date(application.resume.uploadedAt),
+                      )
+                    : "N/A"}
+                </p>
+              </div>
+
+              <Button
+                onClick={() => window.open(application.resume.url, "_blank")}
+              >
+                View Resume
+              </Button>
+            </div>
+          ) : (
+            <p className="text-gray-500">
+              Resume information is not available.
+            </p>
+          )}
         </Card>
+
+        <ApplicationStatusCard application={application} onStatusUpdated={fetchApplication} />
+        <SkillsAnalysisCard analysis={application.ai?.skillsAnalysis} />
+        <ResumeSuggestionsCard suggestions={application.ai?.resumeSuggestions} />
+        <InterviewPreparationCard interview={application.ai?.interviewPreparation} />
+        <JobInsightsCard insights={application.ai?.jobInsights} />
+
       </div>
     </DashboardLayout>
   );

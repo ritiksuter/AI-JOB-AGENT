@@ -31,10 +31,27 @@ export const getApplications = async () => {
   return response.data;
 };
 
-// ✅ Get Single Application
+// Get Single Application
 export const getApplicationById = async (id) => {
   const response = await api.get(
     `/applications/application/${id}`
+  );
+
+  return response.data;
+};
+
+// Update Application Status
+export const updateApplicationStatus = async (
+  id,
+  status,
+  note = ""
+) => {
+  const response = await api.patch(
+    `/applications/application/${id}/status`,
+    {
+      status,
+      note,
+    }
   );
 
   return response.data;

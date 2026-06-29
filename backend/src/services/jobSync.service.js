@@ -92,9 +92,9 @@ export const syncJobsFromSheet = async () => {
     }
   }
 
-  if (processedRows.length > 0) {
-    await deleteRowsFromSheet(processedRows);
-  }
+  // if (processedRows.length > 0) {
+  //   await deleteRowsFromSheet(processedRows);
+  // }
 
   return {
     inserted: jobsToInsert.length,
