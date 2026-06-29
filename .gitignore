@@ -32,6 +32,8 @@ coverage/
 **/coverage/
 **/.vite/
 
+
+
 # ==========================
 # Logs
 # ==========================
@@ -137,3 +139,6 @@ crash.log
 # package-lock.json
 # yarn.lock
 # pnpm-lock.yaml
+
+
+./n8n/n8n_data
