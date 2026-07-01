@@ -1,54 +1,92 @@
 # AI Job Search Platform
 
-A full-stack job search application that supports user authentication, resume uploads, job discovery, application tracking, profile management, and AI-enhanced resume and skills analysis.
+The AI Job Search Platform is a full-stack application designed to help users discover jobs, manage applications, upload resumes, and receive AI-powered insights that improve their job search experience. The system combines a modern React frontend, a Node.js/Express backend, MongoDB persistence, and workflow automation with n8n to create a smart and connected job application experience.
 
-## Project Overview
+## 1. Project Overview
 
-The repository is organized into a decoupled frontend, backend, and automation workflows:
+This repository is divided into three main parts:
 
-- `frontend/` — React 19 + Vite client application
-- `backend/` — Node.js + Express API with MongoDB persistence
-- `n8n/` — workflow automation and Docker Compose configuration
+- Frontend: a React + Vite application for the user interface
+- Backend: an Express-based API for authentication, job workflows, resumes, and AI services
+- n8n: automation workflows for syncing and external processing tasks
 
-## Key Features
+The goal of the platform is to make job hunting easier by combining application tracking, resume intelligence, and automation in one place.
 
-- User registration and login with JWT-protected routes
-- Job search, browsing, and application workflow
-- Resume upload and Cloudinary storage
-- User profile management and resume status tracking
-- Application history tracking and application status cards
-- AI-powered resume analysis and skills extraction
-- Google Sheets integration for external data sync
-- Webhook-triggered automation and job sync workflows
-- n8n automation support for workflow orchestration
+## 2. What This Platform Does
 
-## Frontend Features
+Users can:
 
-- Login and registration pages
-- Protected dashboard, profile, resume, jobs, and applications pages
-- Resume upload and management UI
-- Job list, search bar, and application card components
-- Application status dashboard and interview preparation cards
-- Responsive design with reusable shared components
-- Redux Toolkit state management
+- Create an account and log in securely
+- Browse and search jobs
+- Track applications in a structured dashboard
+- Upload resumes for storage and analysis
+- Receive AI-driven suggestions about skills and resume improvements
+- Manage their profile and application progress
+- Use automated workflows for job-related processes
 
-## Backend Features
+## 3. Core Features
 
-- Authentication and authorization endpoints
-- REST APIs for users, resumes, jobs, and applications
-- JWT middleware for protected routes
-- Resume uploads handled by Multer
-- Cloudinary integration for resume storage
-- AI-assisted skills analysis and resume parsing services
-- Google Sheets and webhook service integrations
-- MongoDB + Mongoose data models
-- External service orchestration via webhook workflows
+### User Experience Features
 
-## Project Structure
+- Secure login and registration flow
+- Protected routes for authenticated users
+- Dashboard for application tracking
+- Profile management screen
+- Resume upload section
+- Job browsing and search experience
+- Application status cards and progress visualization
+
+### Backend Capabilities
+
+- RESTful API endpoints for authentication, users, resumes, jobs, and applications
+- JWT-based authentication and authorization
+- MongoDB storage through Mongoose models
+- Resume upload handling with Cloudinary integration
+- AI-based skills analysis and resume intelligence services
+- Google Sheets integration for external data synchronization
+- Webhook support for automation and external system communication
+
+### Automation Features
+
+- Workflow automation using n8n
+- Webhook-triggered processing for job sync and external tasks
+- Flexible integration layer for future automation expansion
+
+## 4. Technology Stack
+
+### Frontend
+
+- React 19
+- Vite
+- Redux Toolkit
+- React Router
+- Tailwind CSS
+- ESLint
+
+### Backend
+
+- Node.js
+- Express.js
+- MongoDB + Mongoose
+- JWT
+- Cloudinary
+- Multer
+- Google Gemini AI integration
+- Google APIs
+- Axios
+- dotenv
+
+### Automation
+
+- n8n
+- Docker Compose
+- SQLite-based n8n data storage
+
+## 5. Project Structure
 
 ```text
 ai-job-search/
-├── backend/           # Express API implementation and services
+├── backend/
 │   ├── src/
 │   │   ├── app.js
 │   │   ├── server.js
@@ -59,104 +97,183 @@ ai-job-search/
 │   │   └── services/
 │   ├── package.json
 │   └── service-account.json
-├── frontend/          # React + Vite client application
+├── frontend/
 │   ├── src/
-│   │   ├── App.css
-│   │   ├── App.jsx
-│   │   ├── index.css
-│   │   ├── main.jsx
 │   │   ├── components/
 │   │   ├── pages/
 │   │   ├── redux/
-│   │   └── services/
+│   │   ├── services/
+│   │   └── App.jsx
 │   ├── package.json
-│   ├── eslint.config.js
 │   └── vite.config.js
-└── n8n/               # n8n workflow automation setup
+└── n8n/
     ├── docker-compose.yml
     ├── My workflow.json
     └── n8n_data/
 ```
 
-## Setup Guide
+## 6. System Flow Diagram
 
-### 1. Install dependencies
+The following diagram explains how the platform works from a user action to data processing and storage.
 
-Backend:
+```mermaid
+flowchart LR
+    A[User] --> B[React Frontend]
+    B --> C[Auth API]
+    B --> D[Job API]
+    B --> E[Resume API]
+    B --> F[Application API]
+
+    C --> G[MongoDB]
+    D --> G
+    E --> G
+    F --> G
+
+    E --> H[Cloudinary]
+    E --> I[AI Skills Analysis]
+    D --> J[n8n Workflow]
+    J --> K[Webhook / External Sync]
+    D --> L[Google Sheets]
+```
+
+## 7. How the Application Works
+
+1. A user opens the frontend and signs in or registers.
+2. The frontend sends requests to the backend APIs for jobs, applications, and resumes.
+3. The backend validates authentication and stores or retrieves data from MongoDB.
+4. Resume uploads are processed and sent to Cloudinary for storage.
+5. AI services analyze the resume and extract useful skill-related insights.
+6. n8n workflows can trigger external automation tasks such as job syncing or webhook actions.
+7. Users see the updated dashboard and application progress in real time.
+
+## 8. Prerequisites
+
+Before running this project locally, make sure you have:
+
+- Node.js installed
+- npm installed
+- MongoDB running or accessible
+- Cloudinary account credentials
+- A valid Google AI or related service configuration if AI features are enabled
+
+## 9. Setup Instructions
+
+### Step 1: Clone the repository
+
+```bash
+git clone <your-repository-url>
+cd AI-Job-Search
+```
+
+### Step 2: Install backend dependencies
 
 ```bash
 cd backend
 npm install
 ```
 
-Frontend:
+### Step 3: Install frontend dependencies
 
 ```bash
-cd frontend
+cd ../frontend
 npm install
 ```
 
-### 2. Configure environment variables
+### Step 4: Configure environment variables
 
-Create a `.env` file inside `backend/` with values such as:
+Create a `.env` file in the backend directory with values similar to the following:
 
 ```env
 PORT=8000
-MONGODB_URI=<your-mongodb-connection-string>
-JWT_SECRET=<your-secret-key>
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
 FRONTEND_URL=http://localhost:5173
-CLOUDINARY_CLOUD_NAME=<your-cloud-name>
-CLOUDINARY_API_KEY=<your-api-key>
-CLOUDINARY_API_SECRET=<your-api-secret>
-N8N_WEBHOOK_URL=<your-webhook-url>
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+N8N_WEBHOOK_URL=your_webhook_url
 ```
 
-### 3. Run the backend
+### Step 5: Start the backend
 
 ```bash
 cd backend
 npm run dev
 ```
 
-### 4. Run the frontend
+### Step 6: Start the frontend
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Open the app at:
+The frontend will usually run at:
 
 ```text
 http://localhost:5173
 ```
 
-## Available Scripts
+The backend API will typically run at:
 
-### Backend
+```text
+http://localhost:8000
+```
 
-- `npm run dev` — start the API with nodemon
-- `npm start` — start the API in production mode
+## 10. Available Scripts
 
-### Frontend
+### Backend Scripts
+
+- `npm run dev` — start the backend in development mode using nodemon
+- `npm start` — start the backend in production mode
+
+### Frontend Scripts
 
 - `npm run dev` — start the Vite development server
-- `npm run build` — build the production application
+- `npm run build` — create a production build
 - `npm run preview` — preview the production build locally
-- `npm run lint` — run ESLint on the frontend source
+- `npm run lint` — run ESLint checks
 
-## Notes
+## 11. API Areas
 
-- The frontend expects the backend API to be available for auth, jobs, applications, and resume uploads.
-- Resume files are uploaded through the backend to Cloudinary.
-- The backend includes AI and automation services for skills analysis and workflow orchestration.
-- The `n8n/` folder contains workflow automation assets and Docker Compose setup to run n8n locally.
+The backend exposes major modules for:
 
+- Authentication: `/api/auth`
+- User management: `/api/user`
+- Resume handling: `/api/resume`
+- Jobs and applications: `/api/job` and `/api/application`
+- Webhook and automation: `/api/webhook`
 
-## Dashboard
-![alt text](image.png)
+## 12. Future Goals
 
+The platform has strong potential for continued growth. Some planned improvements include:
 
-## n8n Workflow
+- AI-powered job matching based on user profile and skills
+- Personalized job recommendations and ranking
+- Interview preparation support with AI-generated questions and answers
+- Resume improvement suggestions with score-based feedback
+- Notification system for application deadlines and interview updates
+- Admin dashboard for monitoring user activity and platform performance
+- Advanced analytics for job search trends and success rates
+- Deployment to cloud platforms with better scalability and monitoring
+- Mobile-friendly enhancements and native app support
 
-![n8n Workflow](assets/image.png)
+## 13. Development Notes
+
+- The frontend and backend are intentionally separated for easier scaling and maintenance.
+- The backend can be extended with more AI modules as the platform grows.
+- n8n workflows make it easier to connect the platform with third-party systems and automation tools.
+- This project is a strong foundation for building a smart, AI-assisted career platform.
+
+## 14. Contribution
+
+Contributions are welcome. If you want to improve the project:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Open a pull request with a clear explanation
+
+## 15. Summary
+
+This project is more than a simple job board. It combines job discovery, career management, file handling, AI analysis, and workflow automation into one unified experience. Its modular structure makes it easy to extend and improve over time.
